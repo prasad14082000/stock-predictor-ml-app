@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from src.visuals import plot_residuals, plot_feature_importance
+from src.explainability import explain_model_shap
 import os
 
 def adjusted_r2_score(r2: float, n: int, k: int) -> float:
@@ -62,6 +63,13 @@ def train_multiple_models(df: pd.DataFrame, stock_name: str):
         results.append((name, rmse, r2, adj_r2))
         model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{name.replace(' ', '_').lower()}.pkl"
         joblib.dump(pipeline, model_path)
+
+        if name in ['Linear Regression', 'Ridge Regression', 'Lasso Regression', 'ElasticNet', 'SVR']:
+            try:
+                explain_model_shap(pipeline.named_steps['model'], X_train, stock_name, name.replace(" ", "_").lower())
+            except Exception as e:
+                print(f"⚠️ SHAP explanation failed for {name}: {e}")
+
 
     print("\nModel Comparison Results:")
     for name, rmse, r2, adj_r2 in sorted(results, key=lambda x: x[1]):
