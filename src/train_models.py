@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from src.visuals import plot_residuals, plot_feature_importance
 import os
 
 def adjusted_r2_score(r2: float, n: int, k: int) -> float:
@@ -52,6 +53,12 @@ def train_multiple_models(df: pd.DataFrame, stock_name: str):
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         r2 = r2_score(y_test, y_pred)
         adj_r2 = adjusted_r2_score(r2, X_test.shape[0], X_test.shape[1])
+
+        # Save visuals
+        plot_residuals(y_test, y_pred, name.replace(" ", "_").lower(), stock_name)
+        if hasattr(model, 'feature_importances_'):
+            plot_feature_importance(model, X.columns, name.replace(" ", "_").lower(), stock_name)
+            
         results.append((name, rmse, r2, adj_r2))
         model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{name.replace(' ', '_').lower()}.pkl"
         joblib.dump(pipeline, model_path)
