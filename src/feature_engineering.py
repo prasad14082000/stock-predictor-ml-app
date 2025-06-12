@@ -2,10 +2,18 @@
 import pandas as pd
 import numpy as np
 
+def add_time_feature(df: pd.DataFrame) -> pd.DataFrame:
+    df['Day'] = df['Date'].dt.day
+    df['Month'] = df['Date'].dt.month
+    df['Weekday'] = df['Date'].dt.weekday
+
+    df = pd.get_dummies(df, columns= ['Day', 'Month', 'Weekday'], drop_first = True)
+
+    return df
+
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df['Daily Returns'] = df['Close'].pct_change()
     df['Price Range'] = df['High'] - df['Low']
-    df['Range %'] = df['Price Range'] / df['Close'] * 100
     df['Cumulative Return'] = (1 + df['Daily Returns']).cumprod()
     df['MA10'] = df['Close'].rolling(window=10).mean()
     df['MA20'] = df['Close'].rolling(window=20).mean()
@@ -16,9 +24,7 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df['Lag_1'] = df['Close'].shift(1)
     df['Lag_2'] = df['Close'].shift(2)
     df['Lag_10'] = df['Close'].shift(10)
-    df['Day'] = df['Date'].dt.day
-    df['Month'] = df['Date'].dt.month
-    df['Weekday'] = df['Date'].dt.weekday
+    
     ema_12 = df['Close'].ewm(span=12, adjust=False).mean()
     ema_26 = df['Close'].ewm(span=26, adjust=False).mean()
     df['MACD'] = ema_12 - ema_26
@@ -46,7 +52,16 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df['momentum'] = df['Close'] - df['Close'].shift(3)
     df['volatility'] = df['Close'].rolling(window=7).std()
 
-    # Optional: fill or drop NaN if needed
-    df.dropna(subset=['RSI'], inplace=True)
+    # --- Exogenous Nifty Features ---
+    if 'Nifty_Close' in df.columns:
+        df['Nifty_Returns'] = df['Nifty_Close'].pct_change()
+        df['Nifty_Lag_1'] = df['Nifty_Close'].shift(1)
+        df['Nifty_MA10'] = df['Nifty_Close'].rolling(window=10).mean()
+
+    df = add_time_feature(df)
+
+    # Drop NA only if RSI exists
+    if 'RSI' in df.columns:
+        df.dropna(subset=['RSI'], inplace=True)
     df.dropna(inplace=True)
     return df

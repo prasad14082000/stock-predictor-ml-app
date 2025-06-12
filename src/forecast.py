@@ -36,7 +36,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         enriched.dropna(inplace=True)
 
         # Define essential features to always retain
-        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns']
+        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns', 'Day', 'Weekday', 'Month']
 
         # Select features by correlation, but preserve essential features
         all_features_df = enriched.drop(columns=['Date', 'Close'])
