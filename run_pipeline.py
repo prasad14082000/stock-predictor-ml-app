@@ -5,6 +5,7 @@ from src.feature_engineering import add_features
 from src.eda import eda_summary
 from src.train_models import train_multiple_models
 from src.forecast import forecast_next_days
+from src.evaluate_models import evaluate_all_models
 import os
 import pandas as pd
 
@@ -32,6 +33,8 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     os.makedirs(processed_dir, exist_ok=True)
     df.to_pickle(f"{processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
     print(f"\n✅ Pipeline completed. Processed data saved at: {processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
+
+    evaluate_all_models(stock_name=symbol.replace(".NS",""), lookback_days=30)
 
 
 if __name__ == "__main__":
