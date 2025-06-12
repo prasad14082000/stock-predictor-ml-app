@@ -7,9 +7,6 @@ from dateutil.relativedelta import relativedelta
 from src.feature_engineering import add_features
 from src.eda import select_features_by_correlation
 import matplotlib.pyplot as plt
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
 
 def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     '''
@@ -18,7 +15,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{model_name}.pkl"
     data_path = f"C://GITHUB CODES//stock-predictor-ml//data//processed/{stock_name}_v2.pkl"
 
-# Load model and features used during training
+    # Load model and features used during training
     model_bundle = joblib.load(model_path)
     if isinstance(model_bundle, tuple):
         model, expected_features = model_bundle

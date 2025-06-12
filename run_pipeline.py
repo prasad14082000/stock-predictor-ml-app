@@ -23,7 +23,9 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     train_multiple_models(df, stock_name=symbol.replace(".NS", ""))
 
     if forecast_days > 0:
-        forecast_next_days(stock_name=symbol.replace(".NS", ""), model_name = 'linear_regression', days_ahead=forecast_days)
+        models_to_forecast = ['linear_regression', 'elasticnet', 'xgboost', 'random_forest']
+        for model_name in models_to_forecast:
+            forecast_next_days(stock_name=symbol.replace(".NS", ""), model_name = model_name, days_ahead=forecast_days)
 
     # Save the processed DataFrame
     processed_dir = "data/processed"
