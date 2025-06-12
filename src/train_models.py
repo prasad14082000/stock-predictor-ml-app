@@ -12,21 +12,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from src.visuals import plot_residuals, plot_feature_importance
+from src.eda import select_features_by_correlation
 import os
 
 def adjusted_r2_score(r2: float, n: int, k: int) -> float:
     return 1 - (1 - r2) * (n - 1) / (n - k - 1)
 
-def select_features_by_correlation(df: pd.DataFrame, threshold: float = 0.75) -> list:
-    corr_matrix = df.corr().abs()
-    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
-    return [col for col in df.columns if col not in to_drop]
-
 def train_multiple_models(df: pd.DataFrame, stock_name: str):
     all_features = df.drop(columns=['Close', 'Date']).select_dtypes(include=[np.number])
-    filtered_features = select_features_by_correlation(all_features, threshold=0.75)
-
+    essential_features = ['Lag_1', 'RSI', 'MA10']
+    filtered_features = select_features_by_correlation(all_features, threshold=0.75, always_keep=essential_features)
+    
     X = df[filtered_features]
     y = df['Close']
 
@@ -61,7 +57,7 @@ def train_multiple_models(df: pd.DataFrame, stock_name: str):
             
         results.append((name, rmse, r2, adj_r2))
         model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{name.replace(' ', '_').lower()}.pkl"
-        joblib.dump(pipeline, model_path)
+        joblib.dump((pipeline, filtered_features), model_path)
 
     print("\nModel Comparison Results:")
     for name, rmse, r2, adj_r2 in sorted(results, key=lambda x: x[1]):

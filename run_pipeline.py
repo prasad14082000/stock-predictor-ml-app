@@ -1,13 +1,15 @@
+#run_pipeline.py
 import argparse
 from src.data_loader import download_stock_data
 from src.feature_engineering import add_features
 from src.eda import eda_summary
 from src.train_models import train_multiple_models
+from src.forecast import forecast_next_days
 import os
 import pandas as pd
 
 
-def run_pipeline(symbol: str, start_date: str, end_date: str):
+def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int):
     print(f"\n📥 Downloading data for {symbol}...")
     df = download_stock_data(symbol, start_date, end_date)
 
@@ -19,6 +21,9 @@ def run_pipeline(symbol: str, start_date: str, end_date: str):
 
     print("\n🤖 Training models and evaluating...")
     train_multiple_models(df, stock_name=symbol.replace(".NS", ""))
+
+    if forecast_days > 0:
+        forecast_next_days(stock_name=symbol.replace(".NS", ""), model_name = 'linear_regression', days_ahead=forecast_days)
 
     # Save the processed DataFrame
     processed_dir = "data/processed"
@@ -32,6 +37,8 @@ if __name__ == "__main__":
     parser.add_argument("--symbol", type=str, required=True, help="Stock ticker symbol, e.g., RELIANCE.NS")
     parser.add_argument("--start", type=str, required=True, help="Start date (YYYY-MM-DD)")
     parser.add_argument("--end", type=str, required=True, help="End date (YYYY-MM-DD)")
+    parser.add_argument("--forecast_days", type = int, default=0, help='Number of days to forecast')
+    
     args = parser.parse_args()
 
-    run_pipeline(args.symbol, args.start, args.end)
+    run_pipeline(args.symbol, args.start, args.end, args.forecast_days)

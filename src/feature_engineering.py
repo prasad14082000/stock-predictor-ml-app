@@ -42,6 +42,9 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     rs = avg_gain / avg_loss.replace(0, np.nan)
     # Compute RSI
     df['RSI'] = 100 - (100 / (1 + rs))
+    
+    df['momentum'] = df['Close'] - df['Close'].shift(3)
+    df['volatility'] = df['Close'].rolling(window=7).std()
 
     # Optional: fill or drop NaN if needed
     df.dropna(subset=['RSI'], inplace=True)

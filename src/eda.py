@@ -1,3 +1,4 @@
+##src/eda.py
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -18,12 +19,26 @@ def eda_summary(df: pd.DataFrame, stock_name: str):
     print(f"Correlation heatmap saved to reports/{stock_name}_correlation_heatmap.png")
 
 
-def select_features_by_correlation(df: pd.DataFrame, threshold: float = 0.75) -> list:
+def select_features_by_correlation(df: pd.DataFrame, threshold: float = 0.75, always_keep: list = None) -> list:
+    if always_keep is None:
+        always_keep = []
+
     corr_matrix = df.corr().abs()
     upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
-    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
-    return [col for col in df.columns if col not in to_drop]
 
+    to_drop = []
+    for column in upper.columns:
+        if any(upper[column] > threshold) and column not in always_keep:
+            to_drop.append(column)
+
+    selected = [col for col in df.columns if col not in to_drop]
+    
+    # Ensure essential features are preserved even if they were marked for removal
+    for col in always_keep:
+        if col not in selected and col in df.columns:
+            selected.append(col)
+
+    return selected
 def calculate_vif(X: pd.DataFrame) -> pd.DataFrame:
     X = X.select_dtypes(include=[np.number]).dropna()
     vif_data = pd.DataFrame()
