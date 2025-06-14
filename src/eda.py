@@ -39,6 +39,8 @@ def select_features_by_correlation(df: pd.DataFrame, threshold: float = 0.75, al
             selected.append(col)
 
     return selected
+
+
 def calculate_vif(X: pd.DataFrame) -> pd.DataFrame:
     X = X.select_dtypes(include=[np.number]).dropna()
     vif_data = pd.DataFrame()

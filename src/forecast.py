@@ -25,6 +25,14 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     
     df = pd.read_pickle(data_path)
     df.sort_values('Date',  inplace = True)
+
+    if 'Nifty_Close' in df.columns:
+        df['Nifty_Returns'] = df['Nifty_Close'].pct_change(fill_method=None)
+        df['Nifty_Lag1'] = df['Nifty_Close'].shift(1)
+        df['Nifty_MA10'] = df['Nifty_Close'].rolling(window=10).mean()
+    else:
+        print("⚠️ 'Nifty_Close' not found. Skipping Nifty-related feature creation.")
+
     future_predictions = []
     
     # Start with the last available data
@@ -36,7 +44,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         enriched.dropna(inplace=True)
 
         # Define essential features to always retain
-        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns', 'Day', 'Weekday', 'Month']
+        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns', 'Day', 'Weekday', 'Month', 'Nifty_Close', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10']
 
         # Select features by correlation, but preserve essential features
         all_features_df = enriched.drop(columns=['Date', 'Close'])
@@ -45,7 +53,13 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         # Align selected features with expected ones from training
         available_features = [f for f in expected_features if f in selected_columns]
         feature_input = enriched[available_features].iloc[[-1]]
-       
+
+        # Safety check
+        missing_features = set(expected_features) - set(feature_input.columns)
+        if missing_features:
+            print(f"❌ Forecast aborted: missing features — {missing_features}")
+            return
+
         # Predict next value
         y_pred = model.predict(feature_input)[0]
 

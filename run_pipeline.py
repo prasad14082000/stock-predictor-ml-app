@@ -31,6 +31,8 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     # Save the processed DataFrame
     processed_dir = "data/processed"
     os.makedirs(processed_dir, exist_ok=True)
+    print("✅ Columns before saving:", df.columns.tolist())
+    
     df.to_pickle(f"{processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
     print(f"\n✅ Pipeline completed. Processed data saved at: {processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
 

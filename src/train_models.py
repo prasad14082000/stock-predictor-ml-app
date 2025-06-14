@@ -20,7 +20,7 @@ def adjusted_r2_score(r2: float, n: int, k: int) -> float:
 
 def train_multiple_models(df: pd.DataFrame, stock_name: str):
     all_features = df.drop(columns=['Close', 'Date']).select_dtypes(include=[np.number])
-    essential_features = ['Lag_1', 'RSI', 'MA10']
+    essential_features = ['Lag_1', 'RSI', 'MA10', 'Nifty_Close', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10']
     filtered_features = select_features_by_correlation(all_features, threshold=0.75, always_keep=essential_features)
     
     X = df[filtered_features]

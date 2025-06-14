@@ -52,12 +52,12 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df['momentum'] = df['Close'] - df['Close'].shift(3)
     df['volatility'] = df['Close'].rolling(window=7).std()
 
-    # --- Exogenous Nifty Features ---
+    # ⬇️ Add exogenous features from Nifty index
     if 'Nifty_Close' in df.columns:
-        df['Nifty_Returns'] = df['Nifty_Close'].pct_change()
-        df['Nifty_Lag_1'] = df['Nifty_Close'].shift(1)
+        df['Nifty_Returns'] = df['Nifty_Close'].pct_change(fill_method=None)
+        df['Nifty_Lag1'] = df['Nifty_Close'].shift(1)
         df['Nifty_MA10'] = df['Nifty_Close'].rolling(window=10).mean()
-
+    
     df = add_time_feature(df)
 
     # Drop NA only if RSI exists
