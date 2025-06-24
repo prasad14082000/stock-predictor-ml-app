@@ -1,8 +1,7 @@
-#multistep_forecast.py
+# multistep_forecast.py
 import os
 import pandas as pd
 import joblib
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from src.feature_engineering import add_features
 
 def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7):
@@ -25,45 +24,74 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
         model_bundle = joblib.load(model_path)
         model, expected_features = model_bundle
 
-        # Maintain a rolling history window for feature engineering
-        history_window = 30
-        history = df.iloc[-history_window:].copy()
+        history = df.copy()
 
         predictions = []
         forecast_dates = []
+        previous_y_pred = None
+        stable_counter = 0
 
         for step in range(forecast_days):
-            current_df = history.copy()
-            current_df = add_features(current_df)
+            # Remove existing engineered columns before reapplying
+            for col in history.columns:
+                if col not in ['Date', 'Close', 'High', 'Low', 'Open', 'Volume', 'Nifty_Close']:
+                    if col not in ['Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10']:  # keep necessary exogenous
+                        history = history.drop(columns=[col], errors='ignore')
+
+            # Re-engineer features
+            current_df = add_features(history.copy())
             current_df.dropna(inplace=True)
 
-            if len(current_df) == 0:
+            if current_df.empty:
                 print(f"❌ DataFrame became empty after adding features at step {step + 1}. Aborting.")
                 return
 
             last_row = current_df.iloc[[-1]]
 
-            # Use only expected features
+            # Ensure all required features exist
             X_pred = last_row[expected_features]
             y_pred = model.predict(X_pred)[0]
-            predictions.append(y_pred)
 
-            # Prepare the next row using predicted close
+            # Optional: Early stopping if predictions stop changing significantly
+            if previous_y_pred is not None and abs(y_pred - previous_y_pred) < 1e-3:
+                stable_counter += 1
+                if stable_counter >= 5:
+                    print("🛑 Stopping early due to prediction convergence.")
+                    break
+            else:
+                stable_counter = 0
+
+            previous_y_pred = y_pred
+            
+            # Predict next row
             next_date = last_row['Date'].values[0] + pd.Timedelta(days=1)
             new_row = last_row.copy()
             new_row['Close'] = y_pred
             new_row['Date'] = next_date
 
+            # Keep only essential columns to avoid bloating
+            base_columns = df.columns
+            new_row = new_row.loc[:, new_row.columns.intersection(base_columns)]
+
+            # Append predicted row to history
+            history = pd.concat([history, new_row], ignore_index=True)
+
+            # Clean up for consistency
+            history = history.drop_duplicates(subset='Date', keep='last')
+            history.reset_index(drop=True, inplace=True)
+
+            predictions.append(y_pred)
             forecast_dates.append(next_date)
 
-            forecast_df = pd.DataFrame({
+        forecast_df = pd.DataFrame({
             "Date": forecast_dates,
             "Forecasted_Close": predictions
-            })
+        })
 
         os.makedirs("reports", exist_ok=True)
-        forecast_df.to_csv(f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast.csv", index=False)
-        print(f"\n✅ Multi-step forecast saved to reports/{stock_name}_{model_name}_multi_step_forecast.csv")
+        out_path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast.csv"
+        forecast_df.to_csv(out_path, index=False)
+        print(f"\n✅ Multi-step forecast saved to {out_path}")
 
     except Exception as e:
         print(f"❌ Error in multi-step forecast: {str(e)}")

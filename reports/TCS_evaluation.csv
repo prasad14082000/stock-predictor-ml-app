@@ -1,8 +1,8 @@
 Model,Samples,RMSE,MAE,R²
-elasticnet,21,56.99,50.32,0.7802
-lasso_regression,21,23.65,14.78,0.9622
-linear_regression,21,16.19,12.18,0.9823
-random_forest,21,515.18,501.49,-16.9604
-ridge_regression,21,22.33,16.47,0.9662
-svr,21,22.95,17.58,0.9644
-xgboost,21,537.2,526.24,-18.5289
+elasticnet,21,58.39,51.62,0.7754
+lasso_regression,21,24.03,14.97,0.9619
+linear_regression,21,16.51,12.39,0.982
+random_forest,21,525.19,511.52,-17.1703
+ridge_regression,21,22.72,16.76,0.966
+svr,21,23.38,17.98,0.964
+xgboost,21,542.28,530.39,-18.3727
