@@ -7,6 +7,7 @@ from src.train_models import train_multiple_models
 from src.forecast import forecast_next_days
 from src.evaluate_models import evaluate_all_models      # Multi-step forecasting with best model
 from src.multistep_forecast import forecast_multi_step
+from src.forecast_with_lstm import forecast_with_lstm
 
 import os
 import pandas as pd
@@ -39,6 +40,13 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     print(f"\n✅ Pipeline completed. Processed data saved at: {processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
 
     evaluate_all_models(stock_name=symbol.replace(".NS",""), lookback_days=30)
+    
+    print("\n🔮 Running LSTM Forecast...")
+    forecast_with_lstm(
+        stock_name=symbol.replace(".NS", ""),
+        forecast_days=forecast_days,   # You can pass any int here
+        lookback=30                    # Or adjust the lookback window as needed
+    )
 
     # Multi-step forecasting with best model
     from src.multistep_forecast import forecast_multi_step
