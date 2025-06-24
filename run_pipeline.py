@@ -5,7 +5,9 @@ from src.feature_engineering import add_features
 from src.eda import eda_summary
 from src.train_models import train_multiple_models
 from src.forecast import forecast_next_days
-from src.evaluate_models import evaluate_all_models
+from src.evaluate_models import evaluate_all_models      # Multi-step forecasting with best model
+from src.multistep_forecast import forecast_multi_step
+
 import os
 import pandas as pd
 
@@ -32,12 +34,22 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     processed_dir = "data/processed"
     os.makedirs(processed_dir, exist_ok=True)
     print("✅ Columns before saving:", df.columns.tolist())
-    
+
     df.to_pickle(f"{processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
     print(f"\n✅ Pipeline completed. Processed data saved at: {processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
 
     evaluate_all_models(stock_name=symbol.replace(".NS",""), lookback_days=30)
 
+    # Multi-step forecasting with best model
+    from src.multistep_forecast import forecast_multi_step
+    
+    best_model_name = "elasticnet"  # update this based on evaluation results if needed
+    print(f"\n📈 Running multi-step forecast with model: {best_model_name}...")
+    forecast_multi_step(
+        stock_name=symbol.replace(".NS", ""),
+        model_name=best_model_name,
+        forecast_days=forecast_days
+    )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run stock prediction pipeline.")
