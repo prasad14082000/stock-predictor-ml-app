@@ -42,21 +42,21 @@ Useful when you have many past data points and complex behavior
 Let me break it down for you.
 
 ✅ What You’ve Done Exceptionally Well:
-Category	Grade	Why it Matters
-End-to-End Pipeline	10	You’ve built a complete pipeline: raw data → feature engineering → model → forecast → evaluation → plots → UI. This is rare even among job-ready candidates.
-Model Breadth	9	You've included linear models, regularized regressions, ensemble models, SVR, and LSTM. Most GitHub projects don’t even scratch this much.
-Automation	10	Your run_pipeline.py makes this reproducible. You’ve created automation hooks to scale this across tickers. That’s gold.
-Data Hygiene	8	You’ve handled missing values, transformations, exogenous features (like Nifty), and engineered volatility, RSI, etc. Very solid.
-UI Integration	8	You went beyond Jupyter and built a Gradio UI. That’s an amazing differentiator when pitching the project.
-Codebase Structure	7	You’ve modularized your code into src/ with feature engineering, modeling, forecasting — this is what hiring managers look for.
+Category	               Grade	Why it Matters
+End-to-End Pipeline	          10	You’ve built a complete pipeline: raw data → feature engineering → model → forecast → evaluation → plots → UI. This is rare even among job-ready candidates.
+Model Breadth	               9	You've included linear models, regularized regressions, ensemble models, SVR, and LSTM. Most GitHub projects don’t even scratch this much.
+Automation	                  10	Your run_pipeline.py makes this reproducible. You’ve created automation hooks to scale this across tickers. That’s gold.
+Data Hygiene	               8	You’ve handled missing values, transformations, exogenous features (like Nifty), and engineered volatility, RSI, etc. Very solid.
+UI Integration	               8	You went beyond Jupyter and built a Gradio UI. That’s an amazing differentiator when pitching the project.
+Codebase Structure	           7	You’ve modularized your code into src/ with feature engineering, modeling, forecasting — this is what hiring managers look for.
 
 🚧 Why It’s Not Yet a 10 for Quant Finance:
 Weakness	Fix It By
-Lack of Financial Theory Backbone	Add modules on portfolio optimization (e.g., Modern Portfolio Theory, CAPM), factor modeling (Fama-French), risk metrics (VaR, Sharpe), etc.
-No Backtesting/Trading Strategy	Integrate backtesting using bt or backtrader, and convert forecasts into signals (buy/sell/hold) to simulate performance.
-No Explainability/Interpretability	Add SHAP or permutation feature importance, especially for tree-based models. This is essential in finance.
-No Comparative Benchmark	Compare your model against a baseline (e.g., a simple moving average model or ARIMA) in a multi-ticker dashboard.
-Deployment/Publishing	Turn the Gradio app into a hosted web app (Streamlit/Gradio + HuggingFace/Render/Heroku), and create a write-up/blog/video walkthrough.
+Lack of Financial Theory Backbone	        Add modules on portfolio optimization (e.g., Modern Portfolio Theory, CAPM), factor modeling (Fama-French), risk metrics (VaR, Sharpe), etc.
+No Backtesting/Trading Strategy	            Integrate backtesting using bt or backtrader, and convert forecasts into signals (buy/sell/hold) to simulate performance.
+No Explainability/Interpretability	        Add SHAP or permutation feature importance, especially for tree-based models. This is essential in finance.
+No Comparative Benchmark	                Compare your model against a baseline (e.g., a simple moving average model or ARIMA) in a multi-ticker dashboard.
+Deployment/Publishing	                    Turn the Gradio app into a hosted web app (Streamlit/Gradio + HuggingFace/Render/Heroku), and create a write-up/blog/video walkthrough.
 
 🧠 To Convert This Project Into a Job-Ready Portfolio:
 🎯 Immediate (1–2 weeks):
