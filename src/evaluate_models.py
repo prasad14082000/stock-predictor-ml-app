@@ -26,7 +26,7 @@ def evaluate_all_models(stock_name: str, lookback_days: int = 30):
         enriched = recent_data.copy()
         all_features_df = enriched.drop(columns=['Date', 'Close'])
 
-        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatility', 'Daily Returns', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10', 'Nifty_Close', 'MACD', 'Price Range']
+        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatility', 'Daily Returns', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10', 'Nifty_Close', 'MACD', 'Price Range', 'StdDev10']
         selected_columns = select_features_by_correlation(all_features_df, always_keep=essential_features)
         print(f"🧮 Features selected by correlation: {selected_columns}")
 

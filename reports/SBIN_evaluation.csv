@@ -1,0 +1,8 @@
+Model,Samples,RMSE,MAE,R²
+elasticnet,21,6.91,5.83,0.9231
+lasso_regression,21,4.7,3.79,0.9645
+linear_regression,21,4.04,3.42,0.9736
+random_forest,21,240.3,239.13,-92.0631
+ridge_regression,21,4.83,3.94,0.9623
+svr,21,4.75,3.92,0.9637
+xgboost,21,244.23,243.36,-95.1278

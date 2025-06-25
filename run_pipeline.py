@@ -26,11 +26,6 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     print("\n🤖 Training models and evaluating...")
     train_multiple_models(df, stock_name=symbol.replace(".NS", ""))
 
-    if forecast_days > 0:
-        models_to_forecast = ['linear_regression', 'elasticnet', 'xgboost', 'random_forest']
-        for model_name in models_to_forecast:
-            forecast_next_days(stock_name=symbol.replace(".NS", ""), model_name = model_name, days_ahead=forecast_days)
-
     # Save the processed DataFrame
     processed_dir = "data/processed"
     os.makedirs(processed_dir, exist_ok=True)
@@ -38,6 +33,11 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
 
     df.to_pickle(f"{processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
     print(f"\n✅ Pipeline completed. Processed data saved at: {processed_dir}/{symbol.replace('.NS', '')}_v2.pkl")
+    
+    if forecast_days > 0:
+        models_to_forecast = ['linear_regression', 'elasticnet', 'xgboost', 'random_forest']
+        for model_name in models_to_forecast:
+            forecast_next_days(stock_name=symbol.replace(".NS", ""), model_name = model_name, days_ahead=forecast_days)
 
     evaluate_all_models(stock_name=symbol.replace(".NS",""), lookback_days=30)
     

@@ -1,5 +1,6 @@
 # multistep_forecast.py
 import os
+import matplotlib.pyplot as plt
 import pandas as pd
 import joblib
 from src.feature_engineering import add_features
@@ -62,7 +63,7 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
                 stable_counter = 0
 
             previous_y_pred = y_pred
-            
+
             # Predict next row
             next_date = last_row['Date'].values[0] + pd.Timedelta(days=1)
             new_row = last_row.copy()
@@ -92,6 +93,22 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
         out_path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast.csv"
         forecast_df.to_csv(out_path, index=False)
         print(f"\n✅ Multi-step forecast saved to {out_path}")
+
+        import matplotlib.pyplot as plt
+
+        # Plot and save the forecast
+        plt.figure(figsize=(12, 6))
+        plt.plot(forecast_df["Date"], forecast_df["Forecasted_Close"], marker='o', linestyle='-')
+        plt.title(f"{stock_name.upper()} Multi-Step Forecast ({model_name})")
+        plt.xlabel("Date")
+        plt.ylabel("Forecasted Close Price")
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plot_path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast_plot.png"
+        plt.savefig(plot_path)
+        plt.close()
+        print(f"📈 Multi-step forecast plot saved to {plot_path}")
 
     except Exception as e:
         print(f"❌ Error in multi-step forecast: {str(e)}")

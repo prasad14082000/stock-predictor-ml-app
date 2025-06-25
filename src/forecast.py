@@ -1,5 +1,6 @@
 #src/forecast.py
 import pandas as pd
+import os
 import numpy as np
 import joblib
 import datetime
@@ -15,6 +16,16 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{model_name}.pkl"
     data_path = f"C://GITHUB CODES//stock-predictor-ml//data//processed/{stock_name}_v2.pkl"
 
+    # → Check if the processed data file exists
+    if not os.path.exists(data_path):
+        print(f"❌ Forecast aborted: processed data file not found at {data_path}")
+        return
+
+    # → Check if the model file exists
+    if not os.path.exists(model_path):
+        print(f"❌ Forecast aborted: model file not found at {model_path}")
+        return
+    
     # Load model and features used during training
     model_bundle = joblib.load(model_path)
     if isinstance(model_bundle, tuple):
@@ -44,7 +55,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         enriched.dropna(inplace=True)
 
         # Define essential features to always retain
-        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns', 'Day', 'Weekday', 'Month', 'Nifty_Close', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10']
+        essential_features = ['Lag_1', 'MA10', 'RSI', 'momentum', 'volatitlity', 'Daily Returns', 'Day', 'Weekday', 'Month', 'Nifty_Close', 'Nifty_Returns', 'Nifty_Lag1', 'Nifty_MA10', 'StdDev10']
 
         # Select features by correlation, but preserve essential features
         all_features_df = enriched.drop(columns=['Date', 'Close'])
@@ -76,8 +87,11 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         future_predictions.append((next_date, y_pred))
 
     future_df = pd.DataFrame(future_predictions, columns = ['Date', 'Forecast'])
-    future_df.to_csv(f'C://GITHUB CODES//stock-predictor-ml//src//reports/{stock_name}_{model_name}_forecast.csv')
-                                                                    
+    os.makedirs("reports", exist_ok=True)
+    future_csv_path = f'C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_forecast.csv'
+    future_plot_path = f'C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_forecast_plot.png'
+    future_df.to_csv(future_csv_path, index=False)
+
     # Plotting forecast results
     plt.figure(figsize=(12, 6))
     plt.plot(df['Date'], df['Close'], label='Historical')
