@@ -46,4 +46,4 @@ demo = gr.Interface(
     description="Run full pipeline with one click: LSTM + Multi-step Forecasting using ElasticNet"
 )
 
-demo.launch()
+demo.launch(share=True)
