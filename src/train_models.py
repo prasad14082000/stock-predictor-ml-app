@@ -31,8 +31,8 @@ def train_multiple_models(df: pd.DataFrame, stock_name: str):
     models = {
         'Linear Regression': LinearRegression(),
         'Ridge Regression': Ridge(alpha=1.0),
-        'Lasso Regression': Lasso(alpha=0.1),
-        'ElasticNet': ElasticNet(alpha=0.1, l1_ratio=0.9),
+        'Lasso Regression': Lasso(alpha=0.1, max_iter=5000),
+        'ElasticNet': ElasticNet(alpha=0.1, l1_ratio=0.9, max_iter=5000),
         'Random Forest': RandomForestRegressor(n_estimators=100, random_state=42),
         'SVR': SVR(kernel='linear', C=10, epsilon=1),
         'XGBoost': XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42)

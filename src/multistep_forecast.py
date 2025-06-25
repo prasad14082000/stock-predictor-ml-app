@@ -11,11 +11,11 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
         model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{model_name}.pkl"
 
         if not os.path.exists(df_path):
-            print(f"❌ Processed file not found: {df_path}")
+            print(f" Processed file not found: {df_path}")
             return
 
         if not os.path.exists(model_path):
-            print(f"❌ Model file not found: {model_path}")
+            print(f" Model file not found: {model_path}")
             return
 
         df = pd.read_pickle(df_path)
@@ -44,7 +44,7 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
             current_df.dropna(inplace=True)
 
             if current_df.empty:
-                print(f"❌ DataFrame became empty after adding features at step {step + 1}. Aborting.")
+                print(f" DataFrame became empty after adding features at step {step + 1}. Aborting.")
                 return
 
             last_row = current_df.iloc[[-1]]
@@ -57,7 +57,7 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
             if previous_y_pred is not None and abs(y_pred - previous_y_pred) < 1e-3:
                 stable_counter += 1
                 if stable_counter >= 5:
-                    print("🛑 Stopping early due to prediction convergence.")
+                    print(" Stopping early due to prediction convergence.")
                     break
             else:
                 stable_counter = 0
@@ -92,7 +92,7 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
         os.makedirs("reports", exist_ok=True)
         out_path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast.csv"
         forecast_df.to_csv(out_path, index=False)
-        print(f"\n✅ Multi-step forecast saved to {out_path}")
+        print(f"\n Multi-step forecast saved to {out_path}")
 
         import matplotlib.pyplot as plt
 
@@ -108,7 +108,7 @@ def forecast_multi_step(stock_name: str, model_name: str, forecast_days: int = 7
         plot_path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_multi_step_forecast_plot.png"
         plt.savefig(plot_path)
         plt.close()
-        print(f"📈 Multi-step forecast plot saved to {plot_path}")
+        print(f" Multi-step forecast plot saved to {plot_path}")
 
     except Exception as e:
-        print(f"❌ Error in multi-step forecast: {str(e)}")
+        print(f" Error in multi-step forecast: {str(e)}")

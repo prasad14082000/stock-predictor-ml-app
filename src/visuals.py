@@ -16,7 +16,7 @@ def plot_residuals(y_true, y_pred, model_name, stock_name):
     path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_residuals.png"
     plt.savefig(path)
     plt.close()
-    print(f"✅ Saved residual plot: {path}")
+    print(f" Saved residual plot: {path}")
 
 def plot_feature_importance(model, feature_names, model_name, stock_name):
     if hasattr(model, 'feature_importances_'):
@@ -33,4 +33,4 @@ def plot_feature_importance(model, feature_names, model_name, stock_name):
         path = f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_{model_name}_feature_importance.png"
         plt.savefig(path)
         plt.close()
-        print(f"✅ Saved feature importance chart: {path}")
+        print(f" Saved feature importance chart: {path}")

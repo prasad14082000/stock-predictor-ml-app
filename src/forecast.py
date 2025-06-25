@@ -18,12 +18,12 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
 
     # → Check if the processed data file exists
     if not os.path.exists(data_path):
-        print(f"❌ Forecast aborted: processed data file not found at {data_path}")
+        print(f" Forecast aborted: processed data file not found at {data_path}")
         return
 
     # → Check if the model file exists
     if not os.path.exists(model_path):
-        print(f"❌ Forecast aborted: model file not found at {model_path}")
+        print(f" Forecast aborted: model file not found at {model_path}")
         return
     
     # Load model and features used during training
@@ -31,7 +31,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     if isinstance(model_bundle, tuple):
         model, expected_features = model_bundle
     else:
-        print("❌ Model bundle is not a tuple. Cannot extract features. Aborting.")
+        print(" Model bundle is not a tuple. Cannot extract features. Aborting.")
         return    
     
     df = pd.read_pickle(data_path)
@@ -42,7 +42,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         df['Nifty_Lag1'] = df['Nifty_Close'].shift(1)
         df['Nifty_MA10'] = df['Nifty_Close'].rolling(window=10).mean()
     else:
-        print("⚠️ 'Nifty_Close' not found. Skipping Nifty-related feature creation.")
+        print(" 'Nifty_Close' not found. Skipping Nifty-related feature creation.")
 
     future_predictions = []
     
@@ -68,7 +68,7 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
         # Safety check
         missing_features = set(expected_features) - set(feature_input.columns)
         if missing_features:
-            print(f"❌ Forecast aborted: missing features — {missing_features}")
+            print(f" Forecast aborted: missing features — {missing_features}")
             return
 
         # Predict next value
@@ -105,4 +105,4 @@ def forecast_next_days(stock_name: str, model_name: str, days_ahead: int = 10):
     plt.savefig(f"reports/{stock_name}_{model_name}_forecast_plot.png")
     plt.close()
 
-    print(f"\U0001F4C8 Forecast complete! Results saved to reports/{stock_name}_{model_name}_forecast.csv")
+    print(f"\n Forecast complete! Results saved to reports/{stock_name}_{model_name}_forecast.csv")

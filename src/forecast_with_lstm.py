@@ -89,7 +89,7 @@ def forecast_with_lstm(stock_name: str, forecast_days: int = 7, lookback: int = 
         # Load processed data
         data_path = f"C://GITHUB CODES//stock-predictor-ml//data/processed/{stock_name}_v2.pkl"
         if not os.path.exists(data_path):
-            print(f"❌ Processed file not found: {data_path}")
+            print(f" Processed file not found: {data_path}")
             return
 
         df = pd.read_pickle(data_path)
@@ -164,7 +164,7 @@ def forecast_with_lstm(stock_name: str, forecast_days: int = 7, lookback: int = 
 
         os.makedirs("reports", exist_ok=True)
         forecast_df.to_csv(f"C://GITHUB CODES//stock-predictor-ml//reports/{stock_name}_lstm_forecast.csv", index=False)
-        print(f"\n✅ LSTM forecast saved to reports/{stock_name}_lstm_forecast.csv")
+        print(f"\n LSTM forecast saved to reports/{stock_name}_lstm_forecast.csv")
         import matplotlib.pyplot as plt
 
         # Plot forecast
@@ -181,8 +181,8 @@ def forecast_with_lstm(stock_name: str, forecast_days: int = 7, lookback: int = 
         plot_path = f"reports/{stock_name}_lstm_forecast_plot.png"
         plt.savefig(plot_path)
         plt.close()
-        print(f"📈 LSTM forecast plot saved to {plot_path}")
+        print(f" LSTM forecast plot saved to {plot_path}")
 
 
     except Exception as e:
-        print(f"❌ Error during LSTM forecast: {str(e)}")
+        print(f" Error during LSTM forecast: {str(e)}")

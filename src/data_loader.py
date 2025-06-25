@@ -25,9 +25,9 @@ def download_stock_data(symbol: str, start: str, end: str) -> pd.DataFrame:
     
     df = df.dropna()
 
-    print("\n🔍 Preview of downloaded DataFrame:")
+    print("\n Preview of downloaded DataFrame:")
     print(df.head())
-    print("\n📐 DataFrame Columns:", df.columns)
-    print("📊 DataFrame Shape:", df.shape)
+    print("\n DataFrame Columns:", df.columns)
+    print("DataFrame Shape:", df.shape)
 
     return df
