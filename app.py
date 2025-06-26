@@ -52,7 +52,11 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             ### 🛠️ Input Parameters
             Fill in the stock symbol and time range to forecast future prices.
             """)
-            symbol = gr.Textbox(label="Stock Symbol (e.g., TCS, RELIANCE)", value="TITAN")
+            symbol = gr.Dropdown(
+                choices=["TITAN", "RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK", "SBIN", "AXISBANK", "CIPLA", "BAJFINANCE", 'ITC', 'ONGC', 'JIOFIN', 'TRENT', 'NTPC', 'COALINDIA', 'WIPRO', 'MARUTI', 'HDFCLIFE'],
+                label="Stock Symbol",
+                value="TITAN"
+            )
             start_date = gr.Textbox(label="Start Date", value="2020-01-01")
             end_date = gr.Textbox(label="End Date", value="2025-01-01")
             forecast_days = gr.Slider(1, 30, value=7, label="Forecast Days")
@@ -73,7 +77,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     gr.Markdown("""
     ---
-    ✅ Built with ❤️ using Gradio, scikit-learn, and LSTM · Not Financial Advice
+    ✅ Built with ❤️, scikit-learn, and LSTM · "Not Financial Advice"
     """)
 
 
