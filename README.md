@@ -1,147 +1,151 @@
-# 📈 Stock Price Predictor App (with LSTM, ElasticNet, and more)
+📈 Stock Price Predictor + Black-Scholes Option Pricing (ML + Quant Finance)
+Welcome!
+This repo combines two powerful financial tools:
 
-Welcome to my machine learning-powered stock prediction app! This project was built as a learning journey in Quant Finance and AI, with guidance from ChatGPT. It's designed to be beginner-friendly and shows how real-world stock data can be used to make short-term forecasts using both classical and deep learning models.
+A Machine Learning-powered Stock Price Predictor (LSTM, ElasticNet, and more)
 
----
+A Black-Scholes Option Pricing & Heatmap Dashboard
+Both built as a practical deep dive into Quantitative Finance and AI, aimed at Indian (NSE) stocks but easily extended.
+Beginner friendly, modular, and ready to play with!
 
-## 🚀 What This App Does
+🚀 What This Project Does
+Stock Forecasting
 
-- Downloads stock data for any NSE-listed company using Yahoo Finance
-- Engineers technical indicators like moving averages, RSI, MACD, and volatility
-- Trains **7 different ML models** including:
-  - Linear Regression
-  - Ridge, Lasso, ElasticNet
-  - Support Vector Regressor
-  - Random Forest
-  - XGBoost
-- Runs **LSTM** (deep learning) model for time-based prediction
-- Performs **multi-step forecasting**
-- Presents the results in a simple **Gradio web interface**
+Download Indian NSE (or any Yahoo Finance) stock data
 
----
+Engineer technical indicators: moving averages, RSI, MACD, volatility, etc.
 
-## 🧠 Why This Project Exists
+Train 7 ML models: Linear, Ridge, Lasso, ElasticNet, SVR, Random Forest, XGBoost
 
-I wanted to understand:
-- How do financial forecasts work?
-- Can machine learning really predict stock prices?
-- How to combine real-world data with ML, without being an expert?
+Run LSTM deep learning forecasting
 
-This project started from scratch and was built piece-by-piece using Python and ChatGPT's mentorship.
+Multi-step forecasts: predict several future days, not just one
 
----
+Easy-to-use Streamlit UI for input and outputs
 
-## 🖥️ Live App Demo
+Options Pricing
 
-> 📍 Run locally:
-```bash
-python app.py
-```
+Interactive Black-Scholes calculator: call & put prices, plus Delta/Gamma Greeks
 
-> 🔍 You will see a URL like `http://127.0.0.1:7860` — open it in your browser!
+Dynamic heatmaps: see how prices change with spot price & volatility
 
----
+Plug in ML-predicted or actual spot prices (or enter manually)
 
-## ✨ Features
+Clear, responsive Streamlit UI for quick experimentation
 
-| Feature                        | Description |
-|-------------------------------|-------------|
-| 📉 ML Forecasting             | Traditional models like ElasticNet & SVR |
-| 🔮 LSTM Forecast              | Deep learning model trained on sequences |
-| 📊 Model Evaluation           | RMSE, R², residual plots |
-| 🔁 Multi-step Forecasting     | Predicts several future days at once |
-| 📋 CSV & Plot Output          | Forecasts saved for further use |
-| 🧩 Modular Code               | Easy to extend or switch models |
-| 🧑‍💻 Beginner Friendly         | Clear file structure and walkthrough |
+🧠 Why I Built This
+I’ve invested in Indian stocks and mutual funds for 7+ years, weathered COVID, wars, bear/bull markets, FII cycles, and built an 18%+ XIRR portfolio.
+But Futures & Options (F&O) were always the “next frontier”.
+So I took my background in statistics & probabilities, and built this project — to learn how ML and classic quant models (like Black-Scholes) actually work together, and what it would take to approach finance like a quant.
+This project is my “learn in public” notebook — and maybe yours too!
 
----
+✨ Features
+Module	Description
+📉 ML Forecasting	Linear, Ridge, Lasso, ElasticNet, SVR, RF, XGB
+🔮 LSTM Forecast	Deep learning, sequence-aware stock forecasting
+📊 Model Evaluation	RMSE, R², residual plots
+🔁 Multi-step	Predict multiple future days, not just one
+📋 CSV/Plot Output	Forecasts saved as CSV and plots for later use
+🧮 Option Pricing	Black-Scholes with call/put/Greeks
+🌈 Option Heatmaps	Visualize option price sensitivity (spot, vol)
+🔗 Unified Interface	One Streamlit app for both stocks & options
+🧩 Modular	Codebase is clean, commented, easy to extend
 
-## 📂 Project Structure
-
-```
+📂 Project Structure
+bash
+Copy
+Edit
 stock-predictor-ml/
 │
-├── app.py                  # Gradio interface
-├── run_pipeline.py         # Main orchestrator
+├── unified_app.py             # Streamlit unified dashboard
+├── run_pipeline.py            # ML workflow runner
 ├── src/
-│   ├── data_loader.py      # Fetches stock data
+│   ├── options/
+│   │   └── black_scholes.py   # Black-Scholes pricing class
+│   ├── data_loader.py
 │   ├── feature_engineering.py
-│   ├── eda.py              # Exploratory Data Analysis
-│   ├── evaluate_models.py  # Evaluations metrics
-│   ├── train_models.py     # Trains ML models
-│   ├── lstm_model.py       # Builds LSTM model
-│   ├── forecast.py         # Forecasting logic
-├── data/                   # Processed data
-├── models/                 # Saved model files
-├── reports/                # Plots and forecast CSVs
-└── requirements.txt        # Python libraries
-```
+│   ├── eda.py
+│   ├── evaluate_models.py
+│   ├── train_models.py
+│   ├── lstm_model.py
+│   ├── forecast.py
+├── data/                      # Processed data (pickle/csv)
+├── models/                    # Saved model files
+├── reports/                   # Plots, CSVs
+├── requirements.txt
+└── README.md
+🛠️ How to Run (Step-by-Step)
+Clone this repo
 
----
-
-## 🔧 How to Run It (Step-by-Step)
-
-1. **Clone the repo**
-```bash
+bash
+Copy
+Edit
 git clone https://github.com/prasad14082000/stock-predictor-ml.git
 cd stock-predictor-ml
-```
+Install dependencies
 
-2. **Set up environment**
-```bash
+bash
+Copy
+Edit
 pip install -r requirements.txt
-```
+Launch the unified app
 
-3. **Run the app**
-```bash
-python unified_app.py
-```
+bash
+Copy
+Edit
+streamlit run unified_app.py
+In the browser:
 
-4. **Enter your inputs** in the Gradio web UI — like:
-   - Stock symbol: `TITAN`
-   - Start date: `2020-01-01`
-   - End date: `2025-01-01`
-   - Forecast days: `7`
+Use the Stock Forecast tab for ML-powered forecasts (select stock, set dates, etc.)
 
----
+Use the Option Pricing tab for Black-Scholes pricing (choose spot price from ML, actual, or manual input)
 
-## 🧪 Sample Forecast Output
+🖥️ Demo
+Forecast Tab Example	Options Tab Example
+	
 
-![Forecast Plot](reports/TITAN_lstm_forecast_plot.png)
+Replace image links with your own generated images if needed.
 
-> You also get a CSV file with predicted values for each day.
+💡 What’s Inside / What I Learned
+Feature engineering matters as much as models.
 
----
+Classical models can still outperform DL in some regimes.
 
-## 💡 What I Learned
+Deploying with Streamlit (or Gradio) makes ML results “real”.
 
-- Feature engineering is **half the work** in ML.
-- Classical models are not obsolete — they’re still powerful and interpretable.
-- Gradio makes it **super easy** to deploy ML models.
-- Don’t be afraid to build even if you don’t know everything upfront — just start!
+Options pricing intuition comes alive when you can tweak and see — not just read theory!
 
----
+“Learn by building” works — even with complex topics.
 
-## 📚 Acknowledgements
+🚀 Future Scope / Next Steps
+Integrate live data feeds (NSE/yfinance auto-refresh)
 
-- Thanks to [OpenAI's ChatGPT](https://openai.com/chatgpt) for mentoring me through this journey.
-- Inspired by projects in Quant Finance and practical ML.
+Auto-calculate volatility (σ) using historical data or implied vol
 
----
+Add more Greeks (Theta, Vega, Rho) for richer risk analysis
 
-## 📬 Contact
+Plug forecasted prices directly into real option chains from NSE
 
-Feel free to reach out if you’re also a beginner or want to collaborate:
+Add popular option strategies: spreads, straddles, etc
 
-- 📧 prasadsonsale10@gmail.com
+Batch backtesting: see how the models would have predicted in the past
 
-- 📊 LinkedIn: [Prasad Sonsale](https://linkedin.com/in/prasad-sonsale)
+Invite feedback and collaboration from fellow quants, statisticians, and finance nerds!
 
----
+🤝 Contributing
+Open to PRs, feedback, and new feature ideas!
+Feel free to fork, raise an issue, or submit your own experiments.
 
-## 🌟 Star This Repo
+📬 Contact / Social
+📧 Email: prasadsonsale10@gmail.com
 
-If you found this project useful, please consider giving it a ⭐ on GitHub — it motivates me to keep learning and building more!
+💼 LinkedIn: Prasad Sonsale
 
----
-🕓 Last updated: 2025-06-25
+⭐ Star on GitHub if you find it useful!
+
+📜 License
+MIT
+
+Built by Prasad Sonsale — a stats nerd learning in public!
+
+Last updated: 2025-06-25
