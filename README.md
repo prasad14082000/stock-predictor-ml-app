@@ -94,7 +94,7 @@ pip install -r requirements.txt
 
 3. **Run the app**
 ```bash
-python app.py
+python unified_app.py
 ```
 
 4. **Enter your inputs** in the Gradio web UI — like:
