@@ -74,13 +74,18 @@ with forecast_tab:
 
                 st.session_state["latest_price"] = latest["Forecasted_Close"]
 
+                # Save latest actual price to session_state from CSV (written by pipeline)
                 try:
-                    actual_df = pd.read_csv(f"data/raw/{base_name}.csv")
-                    st.session_state["last_actual_price"] = actual_df["Close"].iloc[-1] if "Close" in actual_df.columns else 100.0
-                except:
+                    actual_csv = os.path.join("reports", f"{base_name}.NS_actual_price.csv")
+                    if os.path.exists(actual_csv):
+                        actual_df = pd.read_csv(actual_csv)
+                        st.session_state["last_actual_price"] = float(actual_df["Close"].iloc[-1])
+                    else:
+                        st.session_state["last_actual_price"] = 100.0
+                except Exception as e:
                     st.session_state["last_actual_price"] = 100.0
-        else:
-            st.error("❌ Forecast failed. Files not found.")
+                else:
+                    st.error("❌ Forecast failed. Files not found.")
 
 # ----------------------------
 # OPTIONS TAB

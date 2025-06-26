@@ -17,6 +17,15 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
     print(f"\n Downloading data for {symbol}...")
     df = download_stock_data(symbol, start_date, end_date)
 
+    reports_dir = "reports"
+    os.makedirs(reports_dir, exist_ok=True)
+    symbol_upper = symbol.upper()  # SYMBOL should be defined from user input
+
+    # Save the most recent row (actual price) to CSV
+    actual_price_df = df[['Date', 'Close']].tail(1)
+    actual_csv_path = os.path.join(reports_dir, f"{symbol_upper}_actual_price.csv")
+    actual_price_df.to_csv(actual_csv_path, index=False)
+
     print("\n Performing feature engineering...")
     df = add_features(df)
 
