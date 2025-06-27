@@ -28,6 +28,15 @@ def train_multiple_models(df: pd.DataFrame, stock_name: str):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
+    # Save X_train for later use (e.g. SHAP explanations)
+    X.to_pickle(f"data/processed/{stock_name}_X_train.pkl")
+
+    """
+    IMPORTANT: The features selected and used for model training are saved to disk as X_train.
+    Any downstream explainability or prediction tasks should load and use this saved X_train
+    to ensure consistent feature alignment.
+    """
+    
     models = {
         'Linear Regression': LinearRegression(),
         'Ridge Regression': Ridge(alpha=1.0),

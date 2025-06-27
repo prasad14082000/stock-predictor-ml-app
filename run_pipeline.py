@@ -8,10 +8,12 @@ from src.forecast import forecast_next_days
 from src.evaluate_models import evaluate_all_models      # Multi-step forecasting with best model
 from src.multistep_forecast import forecast_multi_step
 from src.forecast_with_lstm import forecast_with_lstm
+from src.explainability import explain_model_shap
+from sklearn.pipeline import Pipeline
 
 import os
 import pandas as pd
-
+import joblib
 
 def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int):
     print(f"\n Downloading data for {symbol}...")
@@ -34,6 +36,26 @@ def run_pipeline(symbol: str, start_date: str, end_date: str, forecast_days: int
 
     print("\n Training models and evaluating...")
     train_multiple_models(df, stock_name=symbol.replace(".NS", ""))
+
+    # -------- SHAP Explanations for Models ---------
+    stock_name = symbol.replace(".NS", "")
+    X_train_path = f"C://GITHUB CODES//stock-predictor-ml//data/processed/{stock_name}_X_train.pkl"
+    if os.path.exists(X_train_path):
+        X_train = pd.read_pickle(X_train_path)
+        shap_model_names = ['elasticnet', 'random_forest', 'xgboost']
+        for model_name in shap_model_names:
+            model_path = f"C://GITHUB CODES//stock-predictor-ml//models/{stock_name}_{model_name}.pkl"
+            if os.path.exists(model_path):
+                pipeline, filtered_features = joblib.load(model_path)
+                # For pipeline, get the actual model
+                model = pipeline.named_steps['model']
+                try:
+                    explain_model_shap(model, X_train[filtered_features], stock_name, model_name)
+                except Exception as e:
+                    print(f"SHAP explanation failed for {model_name}: {e}")
+    else:
+        print(f"X_train pickle not found at: {X_train_path}. Skipping SHAP explanations.")
+
 
     # Save the processed DataFrame
     processed_dir = "data/processed"

@@ -2,7 +2,7 @@ Model,Samples,RMSE,MAE,R²
 elasticnet,21,31.43,28.03,0.8131
 lasso_regression,21,14.64,11.53,0.9594
 linear_regression,21,11.0,9.52,0.9771
-random_forest,21,132.3,122.22,-2.3101
+random_forest,21,130.54,120.78,-2.2227
 ridge_regression,21,14.05,11.56,0.9627
 svr,21,14.34,11.58,0.9611
-xgboost,21,71.79,69.31,0.0254
+xgboost,21,70.56,67.79,0.0583
