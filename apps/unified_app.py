@@ -7,7 +7,7 @@ import subprocess
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.options.black_scholes import BlackScholes
+from src.options_pricing.black_scholes import BlackScholes
 
 # ----------------------------
 # PAGE CONFIG

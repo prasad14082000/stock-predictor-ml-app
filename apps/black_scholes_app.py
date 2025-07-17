@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.options.black_scholes import BlackScholes
+from src.options_pricing.black_scholes import BlackScholes
 
 st.set_page_config(
     page_title="📈 Black-Scholes Option Pricing",

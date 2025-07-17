@@ -1,5 +1,5 @@
 # app_options.py
-from src.options.black_scholes import BlackScholes
+from src.options_pricing.black_scholes import BlackScholes
 import streamlit as st
 
 st.set_page_config(page_title="📈 Black-Scholes Options", layout="centered")
