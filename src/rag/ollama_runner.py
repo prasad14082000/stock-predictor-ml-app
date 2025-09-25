@@ -1,25 +1,38 @@
 # src/rag/ollama_runner.py
-
 import requests
+from typing import Optional, Dict, Any
 
-def query_ollama(prompt, model="llama3", base_url="http://localhost:11434"):
+OLLAMA_API = "http://localhost:11434/api/generate"
+
+def generate(
+    prompt: str,
+    model: str = "llama3",
+    options: Optional[Dict[str, Any]] = None,
+    stream: bool = False,
+) -> str:
     """
-    Sends a prompt to the Ollama LLM server and returns the response text.
-
-    Args:
-        prompt (str): The prompt/question to send to Ollama.
-        model (str): Name of the Ollama model (default: "llama3").
-        base_url (str): Base URL for Ollama server (default: localhost).
-
-    Returns:
-        str: The LLM-generated response (answer text).
+    Call a local Ollama model. Returns the final text (non-streaming).
+    Raises on HTTP errors with a useful message.
     """
-    url = f"{base_url}/api/generate"
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": stream,
+    }
+    if options:
+        payload["options"] = options
+
     try:
-        response = requests.post(url, json={"model": model, "prompt": prompt})
-        response.raise_for_status()
-        data = response.json()
-        # 'response' key holds the generated text in Ollama's API
-        return data.get("response", "").strip()
-    except Exception as e:
-        return f"Ollama API error: {str(e)}"
+        r = requests.post(OLLAMA_API, json=payload, timeout=180)
+        r.raise_for_status()
+        data = r.json()
+        if "response" not in data:
+            raise RuntimeError(f"Ollama returned unexpected payload: {data}")
+        return data["response"]
+    except requests.exceptions.ConnectionError as e:
+        raise RuntimeError(
+            "Could not reach Ollama at http://localhost:11434. "
+            "Make sure `ollama serve` is running."
+        ) from e
+    except requests.HTTPError as e:
+        raise RuntimeError(f"Ollama HTTP error {r.status_code}: {r.text}") from e
