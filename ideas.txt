@@ -65,3 +65,4 @@ Leaderboards for the best backtests and forecasts.
 12. Mobile App / Telegram Bot
 Send live alerts, daily summary, or option chain analysis to your phone or Telegram/WhatsApp.
 
+13. Add flashcards section for recent events in the market and quick snippets as fact machine

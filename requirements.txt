@@ -123,7 +123,6 @@ pywinpty==2.0.15
 PyYAML==6.0.2
 pyzmq==26.4.0
 referencing==0.36.2
-requests==2.32.3
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
 rpds-py==0.25.0
@@ -177,6 +176,4 @@ chromadb==0.5.18
 pypdf==5.1.0
 pymupdf==1.24.14
 sentence-transformers==2.7.0
-torch>=2.3.0
-pandas>=2.2.2
 requests==2.32.5
