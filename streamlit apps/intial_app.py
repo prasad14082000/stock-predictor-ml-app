@@ -1,5 +1,5 @@
 import gradio as gr
-from run_pipeline import run_pipeline
+from data.inital_run_pipeline import run_pipeline
 import subprocess
 import os
 import matplotlib.pyplot as plt

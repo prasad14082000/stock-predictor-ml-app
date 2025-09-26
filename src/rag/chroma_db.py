@@ -27,5 +27,9 @@ def build_chroma(
             embedding=embeddings
         )
 
-def similarity_search(db: Chroma, query: str, k: int = 4):
-    return db.similarity_search(query, k=k)
+def similarity_search(db: Chroma, query: str, k: int = 4, where: dict | None = None):
+    # LangChain Chroma supports filter=dict -> WHERE on metadata
+    return db.similarity_search(query, k=k, filter=where)
+
+def mmr_search(db: Chroma, query: str, k: int = 6, fetch_k: int = 20, where: dict | None = None):
+    return db.max_marginal_relevance_search(query, k=k, fetch_k=fetch_k, filter=where)
