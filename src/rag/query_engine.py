@@ -158,6 +158,7 @@ _JSON_FORMAT_HINT = """Return STRICT JSON with the following keys:
 - "suggested_actions": array of 1..5 short strings
 - "references": array of strings like "file.pdf:12" copied VERBATIM from the bracketed headers in the context.
 No extra keys. No commentary. Only JSON.
+- If you use a fact, include its source page in "references". No guessing. No extra keys. Only JSON.
 """
 
 def ask_llm_for_thesis(

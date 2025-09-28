@@ -24,3 +24,9 @@ __pycache__/
 
 # Other
 .env
+
+.venv*/
+venv*/
+data/
+reports/
+__pycache__/
