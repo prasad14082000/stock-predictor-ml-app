@@ -6,6 +6,7 @@ import re
 from typing import List, Optional, Sequence
 
 from langchain_core.documents import Document
+from sentence_transformers import CrossEncoder
 
 from src.rag.ollama_runner import generate
 from src.rag.chroma_db import similarity_search as chroma_sim, mmr_search as chroma_mmr
@@ -75,21 +76,53 @@ def _build_where(req: QueryRequest) -> Optional[dict]:
         where["ticker"] = req.ticker
     return where or None
 
+_CE = None
+def rerank_with_cross_encoder(query: str, docs: List[Document], top_k: int = 5) -> List[Document]:
+    global _CE
+    if _CE is None:
+        _CE = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")  # fast CPU model
+    pairs = [[query, d.page_content] for d in docs]
+    scores = _CE.predict(pairs).tolist()
+    ranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+    return [d for d, _ in ranked[:top_k]]
+
+def expand_queries(question: str, model: str) -> List[str]:
+    prompt = f"""Give 3 alternative phrasings of the following research question as a compact JSON array of strings only. Question: {question}"""
+    raw = generate(prompt=prompt, model=model)
+    return json.loads(raw)[:3]
 
 def _retrieve(db, req: QueryRequest, bm25_corpus: Optional[List[Document]] = None) -> List[Document]:
     """Retrieve candidate chunks with vector (MMR or cosine). Optionally merge BM25 if available."""
     where = _build_where(req)
     k = getattr(req, "top_k", 5) or 5
+    queries = [req.question]
+    try:
+        queries += expand_queries(req.question, model="llama3.1:8b-instruct-q4_K_M")
+    except Exception:
+        pass
+
+    
+    pool: List[Document] = []
+    for q in queries:
+        if req.use_mmr:
+            pool += chroma_mmr(db, q, k=max(5*k, 20), fetch_k=max(5*k, 40), where=where)
+        else:
+            pool += chroma_sim(db, q, k=max(5*k, 20), where=where)
 
     # If the caller supplied a BM25 corpus and hybrid module is present, use it
     if bm25_corpus and _HAS_HYBRID:
-        return _hybrid_retrieve(db, bm25_corpus, req.question, where=where, k=k)
+        pool += _hybrid_retrieve(db, bm25_corpus, req.question, where=where, k=max(5*k, 20))
 
-    # Otherwise: vector-only (MMR if requested)
-    if getattr(req, "use_mmr", False):
-        return chroma_mmr(db, req.question, k=k, fetch_k=max(5 * k, 20), where=where)
-    return chroma_sim(db, req.question, k=k, where=where)
+    # Deduplicate by (source,page,text)
+    seen, uniq = set(), []
+    for d in pool:
+        key = (d.metadata.get("source"), d.metadata.get("page"), d.page_content[:60])
+        if key not in seen:
+            seen.add(key)
+            uniq.append(d)
 
+    # Finally re-rank and keep top k
+    return rerank_with_cross_encoder(req.question, uniq, top_k=k)
 
 # ---------------------------
 # Context formatting
@@ -146,8 +179,9 @@ def _summarize_forecasts(forecasts: Optional[List[OptionForecast]]) -> str:
 # LLM prompt & call
 # ---------------------------
 
-_SYSTEM_INSTRUCTIONS = """You are a research assistant that writes crisp, decision-useful summaries for an equity analyst.
-You MUST only use the provided context. Do not invent citations or facts."""
+_SYSTEM_INSTRUCTIONS = """You are an equity research analyst.
+Use ONLY the provided Context. If something is not in Context, say "insufficient context" (don’t guess).
+Think through the facts and their references silently. Do not invent citations or facts. Then output ONLY the final JSON exactly as specified."""
 
 _JSON_FORMAT_HINT = """Return STRICT JSON with the following keys:
 - "ticker": string
@@ -157,9 +191,9 @@ _JSON_FORMAT_HINT = """Return STRICT JSON with the following keys:
 - "risks": array of 2..5 short strings
 - "suggested_actions": array of 1..5 short strings
 - "references": array of strings like "file.pdf:12" copied VERBATIM from the bracketed headers in the context.
-- You MUST include at least 1 reference if any context was provided.
-- No extra keys. No commentary. Only JSON.
-- If you use a fact, include its source page in "references". No guessing. No extra keys. Only JSON.
+You MUST include at least 1 reference if any context was provided.
+No extra keys. No commentary. Only JSON.
+If you use a fact, include its source page in "references". No guessing. No extra keys. Only JSON.
 """
 
 def ask_llm_for_thesis(
@@ -167,7 +201,7 @@ def ask_llm_for_thesis(
     context_block: str,
     forecasts_block: str,
     ticker: Optional[str],
-    model: str = "llama3",
+    model: str = "llama3.1:8b-instruct-q4_K_M",
 ) -> Thesis:
     """Call local Ollama with a tightly-scoped prompt and parse a Thesis."""
     prompt = f"""{_SYSTEM_INSTRUCTIONS}
@@ -182,11 +216,16 @@ Question:
 Context (each section starts with a bracketed source reference; copy these into "references"):
 {context_block}
 """
-    raw = generate(prompt=prompt, model=model, options={"temperature": 0.2, "num_ctx": 4096})
+    raw = generate(
+        prompt=prompt,
+        model=model,
+        options={"temperature": 0.1, "num_ctx": 8192, "repeat_penalty": 1.05, "top_p": 0.9},
+        expect_json=True,     # <— key change
+        timeout=600,)
 
     # Extract JSON robustly (strip non-JSON tokens if any)
     json_text = _extract_json(raw)
-    data = json.loads(json_text)
+    data = json.loads(raw)
 
     # Ticker fallback
     if not data.get("ticker") and ticker:

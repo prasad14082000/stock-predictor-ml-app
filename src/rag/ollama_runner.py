@@ -16,15 +16,20 @@ def ping_ollama(base_url: str = OLLAMA_BASE, timeout: float = 3.0) -> bool:
 
 def generate(
     prompt: str,
-    model: str = "llama3",
+    model: str = "llama3.1:8b-instruct-q4_K_M",
     options: Optional[Dict[str, Any]] = None,
     stream: bool = False,
+    expect_json: bool = False,
     read_timeout: float = 600.0,   # longer for first load
     connect_timeout: float = 5.0,
     max_retries: int = 2,
 ) -> str:
     payload = {"model": model, "prompt": prompt, "stream": stream}
     if options: payload["options"] = options
+
+    if expect_json:
+        # Tells Ollama to bias the output to a valid JSON object
+        payload["format"] = "json"
 
     last_err = None
     for attempt in range(max_retries + 1):
