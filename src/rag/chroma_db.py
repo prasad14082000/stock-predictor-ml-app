@@ -21,7 +21,6 @@ def build_chroma(
             embedding=embeddings,
             persist_directory=persist_dir,
         )
-        db.persist()
         return db
     else:
         return Chroma.from_documents(documents=docs, embedding=embeddings)

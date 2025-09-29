@@ -40,12 +40,12 @@ def to_research_chunk(doc: Document) -> ResearchChunk:
     """Map a LangChain Document into our typed ResearchChunk."""
     md = doc.metadata or {}
     return ResearchChunk(
+        text = doc.page_content or "",
         source=str(md.get("source", "")),
         page=int(md.get("page", 1)) if md.get("page") is not None else 1,
         ticker=str(md.get("ticker", "")),
         source_type=str(md.get("source_type", "")),
         asof_date=md.get("asof_date", None),
-        snippet=doc.page_content or "",
     )
 
 
@@ -157,7 +157,8 @@ _JSON_FORMAT_HINT = """Return STRICT JSON with the following keys:
 - "risks": array of 2..5 short strings
 - "suggested_actions": array of 1..5 short strings
 - "references": array of strings like "file.pdf:12" copied VERBATIM from the bracketed headers in the context.
-No extra keys. No commentary. Only JSON.
+- You MUST include at least 1 reference if any context was provided.
+- No extra keys. No commentary. Only JSON.
 - If you use a fact, include its source page in "references". No guessing. No extra keys. Only JSON.
 """
 
