@@ -259,7 +259,7 @@ def files_to_documents(files: List[Tuple[str, bytes, str]]) -> List[Document]:
 
 def chunk_documents(
     docs: List[Document],
-    chunk_size: int = 800,
+    chunk_size: int = 1200,
     chunk_overlap: int = 120,
 ) -> List[Document]:
     """
